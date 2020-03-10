@@ -7,7 +7,7 @@ class ListConverter():
         list_ = []
         for item in list0:
             for element in list1:
-                if str(element.lower()).find(item.lower())>0:
+                if (str(element).lower()).find(item.lower())>0:
                     dict_.setdefault(item, []).append(element)
         return dict_
 
