@@ -1,0 +1,105 @@
+My main contribution to the project was creating two python classes. UniqueList handled 
+some of the sorting and parsing of the raw data from csv's and pandas. ListConverter 
+handled the transformation of data from lists to a dictionary format which could then be 
+passed directly into a mongo db. 
+
+Below I will discuss the structure and funtionality of the instrumentation within the classes.
+
+unique_list.py___________________
+
+import pandas as pd 
+
+## pandas was necessary for the class methods to function as they rely on several
+## pandas methods.
+
+class UniqueList():
+    
+    def __init__(self):
+        self.df=None
+
+## The contructor initiates the class and sets a class level dataframe variable to None.
+## this is important for an exeption handling in one of the methods below. 
+        
+    def make_df(self,csv):
+        self.df=pd.read_csv(csv)
+
+## Method one creates a df from a csv using the pandas read_csv method. It saves the df 
+## at the class level by assigning the self.df variable.
+        
+    def set_df(self,df):
+        self.df=df
+
+## Method two takes a pre-constructed df and assigns the class level variable to it. This
+## was necesarry to work with the df's that my teammate created.
+
+    def make_list_from_df(self,df,column):
+        self.df=df
+        return self.make_list(column)
+
+## Method three takes a df and a column name and returns a list of unique values using one 
+## of the classes own methods.
+        
+    def make_list(self,column):
+        if self.df is None:
+            return ('you must call set_df or make_df')
+        return list(self.df[column].unique())  
+
+## Method four returns a list of unique values from a column using the pandas .unique() method.
+## It also handles an exeption in which there is not dataframe either passed or consructed.
+
+    def make_list_from_csv(self,csv,column):
+        self.make_df(csv)
+        return self.make_list(column)
+
+## Method five is very simular to four it just skips the middle man, or rather the middle man 
+## funtions only internally. This is what is used to create the list of tweets from the archive.
+
+convert.py_____________________
+
+class ListConverter():
+    def __init__(self):
+        pass
+
+## Once again the contructor brings the thing to life but in this case nothing else. 
+    
+    def associate(self,list0,list1):
+        dict_ = {}
+        list_ = []
+        for item in list0:
+            for element in list1:
+                if str(element).find(item)>0:
+                    dict_.setdefault(item, []).append(element)
+        return dict_
+
+## This was the most challenging and important of the functions I wrote. It takes two lists
+## and returns a dictionary. It does this by looping first through list0 (names) and loops
+## those names through list1 (tweets), if the string combination from list0 is present in
+## list1 the item in list0 is set as the key of dict_ and element in list1 is appended to
+## a list which is the corresponding value. And so, the result is a dictionary in which names
+## present in the list of tweets are keys and every tweet in which they are present listed
+## in the value. The element in the if statement had to be cast as a string because some of 
+## the tweets are not strings. They are links which for some reason python interpreted as
+## floats, so the casting is kind of an internall exeption bypass. It worked but gave me 
+##grief when trying to 
+## add append a .lower() to account for capitalization varience. If I had more time I would
+## have found a solution to this. Also the .setdefault is a python tool for populating a 
+## "default" dictionary. 
+
+    def get_keys(self,a_list): 
+        list_=[]
+        dict_=a_list
+        for key in dict_.keys(): 
+            list_.append(key) 
+          
+        return list_
+
+## I threw this in essentially as a curiostiy to see which names are present in the tweets,
+## and also to check that the previous function worked. 
+
+
+My vision of the project was to have four .py files each with a class per piece written 
+on them to be compiled on a fifth file and run from the command line. One to automate the 
+data collection, a second for data clean up, a third for preparing the data for the database, 
+and a fourth for database interaction. As it was I was able to finish the third and a part 
+of the second. I was on the way to creating the fourth but my teammate was able to write some
+in line code to handle database interaction which is just as well as it worked perfectly. 
