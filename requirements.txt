@@ -1,4 +1,4 @@
-certifi==2019.11.28
+certifi==2022.12.7
 mongo==0.2.0
 numpy==1.18.1
 pandas==1.0.1
